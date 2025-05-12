@@ -20,11 +20,5 @@
 ## 📦 Installation
 
 The simplest way to install this package is via the pypi build:
+
 ```pip install autoLIB```
-
-Alternatively, you can clone the repository and install dependencies:
-
-```bash
-git clone https://github.com/yourusername/autoLIB.git
-cd autoLIB
-pip install -r requirements.txt
