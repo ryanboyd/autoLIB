@@ -162,4 +162,4 @@ cython_debug/
 # Other things that I want to exclude (at least for now)
 excluded/
 *.bat
-testdata/
+#testdata/

@@ -1,6 +1,10 @@
+import os
+import csv
+from datetime import datetime
 import nltk
 import stanza
 import pandas as pd
+from tqdm import tqdm
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk import pos_tag
@@ -132,11 +136,86 @@ class AutoLIB:
 
         return {'overall': summary, 'sentences': results}
 
+    def process_csv(analyzer, input_csv: str, file_encoding: str, row_id_col: str,
+                    text_col: str, keywords: list, output_dir="output") -> None:
+        """
+        Processes a CSV using an AutoLIB analyzer and saves sentence-level and overall LIB results.
+
+        :param analyzer: An instance of the AutoLIB class
+        :param input_csv: Path to the input CSV
+        :param row_id_col: Column name used for unique row identification
+        :param text_col: Column name containing the text to analyze
+        :param keywords: List of keywords to use for sentence relevance filtering
+        :param output_dir: Folder where output files will be saved
+        """
+        execution_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        sentence_predictions_filename = f'{output_dir}/{execution_datetime} - sentence_predictions.csv'
+        overall_predictions_filename = f'{output_dir}/{execution_datetime} - overall_predictions.csv'
+        print(f"\nProcessing input file: {input_csv}")
+
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+
+        with open(input_csv, 'r', encoding=file_encoding) as infile, \
+                open(sentence_predictions_filename, 'w', encoding=file_encoding, newline='') as sent_outfile, \
+                open(overall_predictions_filename, 'w', encoding=file_encoding, newline='') as overall_outfile:
+
+            reader = csv.DictReader(infile)
+            sentence_writer = csv.writer(sent_outfile)
+            overall_writer = csv.writer(overall_outfile)
+
+            # Write headers
+            sentence_writer.writerow([
+                "row_id", "sentence", "valence", #"sentiment_score",
+                "abstraction"
+            ])
+            overall_writer.writerow([
+                "row_id", "overall_word_count", "bias_index", "total_sentences", "total_relevant_sentences",
+                "positive_relevant_sentences", "negative_relevant_sentences", "neutral_relevant_sentences",
+                "average_relevant_sentence_abstraction"
+            ])
+
+            for row in tqdm(reader, desc="Analyzing dataset"):
+                row_id = row[row_id_col]
+                text = row[text_col] or ""
+                result = analyzer.analyze(text, keywords)
+
+                for s in result["sentences"]:
+                    sentence_writer.writerow([
+                        row_id,
+                        s.get("sentence", ""),
+                        s.get("valence", ""),
+                        #s.get("sentiment_score", ""),
+                        s.get("abstraction", "")
+                    ])
+
+                o = result["overall"]
+                overall_writer.writerow([
+                    row_id,
+                    o.get("overall_word_count", ""),
+                    o.get("bias_index", ""),
+                    o.get("total_sentences", ""),
+                    o.get("total_relevant_sentences", ""),
+                    o.get("positive_relevant_sentences", ""),
+                    o.get("negative_relevant_sentences", ""),
+                    o.get("neutral_relevant_sentences", ""),
+                    o.get("average_relevant_sentence_abstraction", "")
+                ])
+
+        print(f"Finished processing: {input_csv}\nOutput stored in: {output_dir}")
+
 if __name__ == "__main__":
-    analyzer = AutoLIB(sentiment_method="vader")
+    analyzer = AutoLIB(sentiment_method="stanza")
     text = "The protesters marched peacefully. Some protesters attacked the site. Critics hated the disruption."
-    keywords = ["protest", "protesters", "pipeline"]
+    keywords = ["protest", "protesters"]
     result = analyzer.analyze(text, keywords)
     print(result["overall"])
     for s in result["sentences"]:
         print(s)
+
+    analyzer.process_csv(input_csv="../../testdata/subsample500.csv",
+                         file_encoding="utf-8-sig",
+                         row_id_col="ID",
+                         text_col="Essay",
+                         keywords=["father", "mother"],
+                         output_dir="../../testdata/")

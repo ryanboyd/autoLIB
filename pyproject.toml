@@ -9,13 +9,13 @@ build-backend = "setuptools.build_meta"
 
 name = "autoLIB-psych"
 
-version = "0.8.0"
+version = "1.0.0"
 
 authors = [
 	{ name="Ryan L. Boyd", email="ryan@ryanboyd.io" },
 ]
 
-description = "A Python package for automated detection of Linguistic Intergroup Bias (LIB) in text data using sentence-level sentiment and word-level abstraction analysis. Designed for research on language bias in news media and social discourse. Implements the general procedures described in: Collins, K. A., & Boyd, R. L. (2025). Automating the detection of linguistic intergroup bias through computerized language analysis. Journal of Language and Social Psychology. https://doi.org/10.1177/0261927X251318887"
+description = "A Python package for automated detection of Linguistic Intergroup Bias (LIB) in text data using sentence-level sentiment and word-level abstraction analysis. Designed for research on language bias in news media and social discourse."
 
 
 readme = "README.MD"
@@ -24,7 +24,8 @@ requires-python = ">=3.10"
 
 dependencies=["tqdm>=4.66.5",
               "nltk>=3.9.1",
-              "stanza>=1.10.1"]
+              "stanza>=1.10.1",
+              "pandas>=2.2.3"]
 
 classifiers = [
 	"Programming Language :: Python :: 3",
