@@ -21,7 +21,7 @@
 
 The simplest way to install this package is via the pypi build:
 
-```pip install autoLIB```
+```from autoLIB import AutoLIB```
 
 ## 📄 Citation
 
