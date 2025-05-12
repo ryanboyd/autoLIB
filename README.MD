@@ -21,7 +21,7 @@
 
 The simplest way to install this package is via the pypi build:
 
-```from autoLIB import AutoLIB```
+```pip install -U autolib-psych```
 
 ## 📄 Citation
 
