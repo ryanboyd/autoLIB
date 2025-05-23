@@ -11,6 +11,7 @@ from nltk import pos_tag
 
 # Initialization
 nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
 nltk.download('vader_lexicon', quiet=True)
 stanza.download('en', processors='tokenize,sentiment', verbose=False)
