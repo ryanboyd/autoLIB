@@ -99,11 +99,14 @@ class AutoLIB:
         undesirable_m = sum(undesirable) / len(undesirable) if undesirable else 0
         return desirable_m - undesirable_m
 
-    def analyze(self, text: str, keywords: list = None):
-        all_sentences, relevant_sentences = self.find_relevant_sentences(text, keywords)
+    def analyze(self, text: str, keywords: list = None, sent_tokenize: bool = True):
+        if sent_tokenize:
+            all_sentences, relevant_sentences = self.find_relevant_sentences(text, keywords)
+        else:
+            all_sentences = [text]
+            relevant_sentences = [text]
         results = []
         total_abstraction = 0
-        total_score = 0
         pos_count = neg_count = neu_count = 0
 
         for sentence in relevant_sentences:
@@ -132,7 +135,7 @@ class AutoLIB:
             'positive_relevant_sentences': pos_count,
             'negative_relevant_sentences': neg_count,
             'neutral_relevant_sentences': neu_count,
-            'overall_word_count': len(word_tokenize(text)),
+            'overall_token_count': len(word_tokenize(text)),
             'average_relevant_sentence_abstraction': avg_abstraction
         }
 
@@ -172,7 +175,7 @@ class AutoLIB:
                 "abstraction"
             ])
             overall_writer.writerow([
-                "row_id", "overall_word_count", "bias_index", "total_sentences", "total_relevant_sentences",
+                "row_id", "overall_token_count", "bias_index", "total_sentences", "total_relevant_sentences",
                 "positive_relevant_sentences", "negative_relevant_sentences", "neutral_relevant_sentences",
                 "average_relevant_sentence_abstraction"
             ])
@@ -194,7 +197,7 @@ class AutoLIB:
                 o = result["overall"]
                 overall_writer.writerow([
                     row_id,
-                    o.get("overall_word_count", ""),
+                    o.get("overall_token_count", ""),
                     o.get("bias_index", ""),
                     o.get("total_sentences", ""),
                     o.get("total_relevant_sentences", ""),
