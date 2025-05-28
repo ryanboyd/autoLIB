@@ -48,7 +48,11 @@ class AutoLIB:
 
     def find_relevant_sentences(self, text, keywords):
         sentences = sent_tokenize(text)
-        relevant = [s for s in sentences if any(k.lower() in s.lower() for k in keywords)]
+        if keywords:
+            relevant = [s for s in sentences if any(k.lower() in s.lower() for k in keywords)]
+        else:
+            relevant = [s for s in sentences]
+
         return sentences, relevant
 
     def analyze_sentiment(self, sentence):
@@ -95,7 +99,7 @@ class AutoLIB:
         undesirable_m = sum(undesirable) / len(undesirable) if undesirable else 0
         return desirable_m - undesirable_m
 
-    def analyze(self, text, keywords):
+    def analyze(self, text: str, keywords: list = None):
         all_sentences, relevant_sentences = self.find_relevant_sentences(text, keywords)
         results = []
         total_abstraction = 0
@@ -143,7 +147,7 @@ class AutoLIB:
         :param input_csv: Path to the input CSV
         :param row_id_col: Column name used for unique row identification
         :param text_col: Column name containing the text to analyze
-        :param keywords: List of keywords to use for sentence relevance filtering
+        :param keywords: List of keywords to use for sentence relevance filtering. If an empty list or 'None' then all sentences will be considered relevant.
         :param output_dir: Folder where output files will be saved
         """
         execution_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
