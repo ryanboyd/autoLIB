@@ -142,7 +142,7 @@ class AutoLIB:
         return {'overall': summary, 'sentences': results}
 
     def process_csv(analyzer, input_csv: str, file_encoding: str, row_id_col: str,
-                    text_col: str, keywords: list, output_dir="output") -> None:
+                    text_col: str, keywords: list, output_dir:str ="output", sent_tokenize: bool = True) -> None:
         """
         Processes a CSV using an AutoLIB analyzer and saves sentence-level and overall LIB results.
 
@@ -183,7 +183,7 @@ class AutoLIB:
             for row in tqdm(reader, desc="Analyzing dataset"):
                 row_id = row[row_id_col]
                 text = row[text_col] or ""
-                result = analyzer.analyze(text, keywords)
+                result = analyzer.analyze(text, keywords, sent_tokenize)
 
                 for s in result["sentences"]:
                     sentence_writer.writerow([
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     for s in result["sentences"]:
         print(s)
 
-    analyzer.process_csv(input_csv="../../testdata/subsample500.csv",
+    analyzer.process_csv(input_csv="../../testdata/thisibelieve_subsample500.csv",
                          file_encoding="utf-8-sig",
                          row_id_col="ID",
                          text_col="Essay",
